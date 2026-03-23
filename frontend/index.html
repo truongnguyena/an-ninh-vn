@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="vi" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberStrike WebOS</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-dark text-light overflow-hidden">
+    <!-- Animated Matrix Background -->
+    <div class="bg-fx position-fixed w-100 h-100 top-0 start-0 z-n1"></div>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="container-fluid min-vh-100 d-flex align-items-center px-3 px-lg-4">
+        <div class="row w-100 align-items-center g-4 auth-layout">
+            <div class="col-lg-8 d-flex justify-content-center">
+                <div class="card glass-card p-5 text-center shadow-lg auth-login-card">
+                    <div class="card-body">
+                        <h1 class="logo-font text-glow mb-2">CRACK.NET</h1>
+                        <p class="text-secondary mb-4 small text-uppercase spacing-1">Trung tam tac chien mang</p>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control glass-input shadow-none" id="username" placeholder="Ten tac chien">
+                            <label for="username" class="text-secondary tracking-wide">Ten tac chien</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control glass-input shadow-none" id="password" placeholder="Mat khau">
+                            <label for="password" class="text-secondary tracking-wide">Mat khau</label>
+                        </div>
+
+                        <div class="d-grid gap-3 mb-3">
+                            <button id="btn-login" class="btn btn-accent fw-bold text-uppercase py-2 tracking-wide">Dang nhap</button>
+                            <button id="btn-register" class="btn btn-outline-cyber fw-bold text-uppercase py-2 tracking-wide">Dang ky</button>
+                        </div>
+
+                        <div id="auth-error" class="text-danger small mt-2 fw-bold"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="d-flex flex-column gap-3 auth-right-panel">
+                    <div class="card glass-card p-3 shadow-sm">
+                        <h6 class="text-muted text-uppercase mb-3 fw-bold"><i class="bi bi-trophy"></i> Bang xep hang</h6>
+                        <ul id="leaderboard-list" class="list-group list-group-flush bg-transparent">
+                            <!-- Filled by JS -->
+                        </ul>
+                    </div>
+
+                    <div class="card glass-card p-3 shadow-sm border-accent-subtle">
+                        <h6 class="text-accent text-uppercase mb-2 fw-bold">Phong cho da nguoi choi</h6>
+                        <div class="d-flex gap-2 flex-wrap mb-2 small text-mono">
+                            <span class="badge bg-secondary">Online: <span id="auth-online-count">0</span></span>
+                            <span class="badge bg-warning text-dark">Hang cho: <span id="auth-queue-count">0</span></span>
+                            <span class="badge bg-danger">Dang dau: <span id="auth-ingame-count">0</span></span>
+                        </div>
+                        <ul id="auth-online-list" class="list-group list-group-flush bg-transparent small">
+                            <li class="list-group-item text-muted">Chua co nguoi choi online.</li>
+                        </ul>
+                    </div>
+
+                    <div id="donate-widget" class="card glass-card p-3 border border-warning-subtle shadow-sm">
+                        <h6 class="text-warning text-uppercase mb-2 fw-bold">Bang xep hang nha hao tam</h6>
+                        <div class="small text-muted mb-2">Ten hien thi tren bang donate:</div>
+                        <input id="donate-name" class="form-control form-control-sm glass-input mb-2" placeholder="Ten cua ban (VD: AnhKhoa)">
+                        <input id="donate-amount" type="number" min="2000" step="1000" class="form-control form-control-sm glass-input mb-2" placeholder="So tien (VND)" value="10000">
+                        <div class="d-flex gap-2 mb-2">
+                            <button class="btn btn-outline-warning btn-sm flex-fill quick-donate" data-amount="10000">10K</button>
+                            <button class="btn btn-outline-warning btn-sm flex-fill quick-donate" data-amount="20000">20K</button>
+                            <button class="btn btn-outline-warning btn-sm flex-fill quick-donate" data-amount="50000">50K</button>
+                        </div>
+                        <button id="btn-donate" class="btn btn-warning btn-sm w-100 fw-bold text-dark mb-2">Donate ngay</button>
+                        <div class="small text-muted mb-2">Noi dung chuyen khoan duoc tao tu dong theo dinh dang DONATE:TEN.</div>
+                        <ul id="donation-list" class="list-group list-group-flush bg-transparent small">
+                            <li class="list-group-item text-muted">Chua co donate nao.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="donation-toast" class="donation-toast d-none"></div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="container-fluid vh-100 d-flex flex-column p-0 d-none">
+        
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg glass-nav border-bottom border-cyber px-4 py-2 shadow z-3">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1 logo-font text-glow fs-4 me-4">CRACK.NET</span>
+                
+                <div class="d-flex align-items-center me-auto text-mono small">
+                    <div class="me-4"><span class="text-muted">TAC CHIEN: </span><span id="my-username" class="text-accent fw-bold fs-6">NULL</span></div>
+                    <div class="me-4"><span class="text-muted">UID: </span><span id="my-uid" class="text-info fw-bold fs-6">UID-NULL</span></div>
+                    <div class="me-4"><span class="text-muted">DIEM: </span><span id="my-score" class="text-success fw-bold fs-6">0</span> pts</div>
+                    <div><span class="text-muted">TIN DUNG: </span><span id="my-credits" class="text-warning fw-bold fs-6">0</span> CR</div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <span id="match-status" class="small text-mono text-warning animate-pulse"></span>
+                    <button id="btn-match" class="btn btn-sm btn-accent fw-bold shadow-pulse px-4 py-2 text-uppercase tracking-wide">Tim doi thu</button>
+                    <button id="btn-shop" class="btn btn-sm btn-outline-warning fw-bold text-uppercase py-2" data-bs-toggle="modal" data-bs-target="#shopModal" disabled>Cua hang</button>
+                    <button id="btn-logout" class="btn btn-sm btn-outline-danger fw-bold text-uppercase py-2">Thoat</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Layout Boards -->
+        <div class="row g-3 flex-grow-1 p-3 m-0 overflow-hidden">
+            
+            <!-- My Infrastructure -->
+            <div class="col-lg-3 col-md-4 d-flex flex-column h-100">
+                <div class="card glass-card flex-grow-1 shadow border-cyber">
+                    <div class="card-header border-bottom border-cyber bg-transparent py-3">
+                        <h6 class="mb-0 text-uppercase tracking-wide text-secondary fw-bold text-center">He thong cua ban</h6>
+                    </div>
+                    <div class="card-body d-flex flex-column gap-4 overflow-auto">
+                        
+                        <!-- HP -->
+                        <div class="p-3 border border-secondary rounded bg-dark-glass">
+                            <div class="d-flex justify-content-between mb-2 small text-mono">
+                                <span class="text-muted">DO BEN HE THONG</span>
+                                <span id="my-hp-text" class="text-accent fw-bold">100/100</span>
+                            </div>
+                            <div class="progress cyber-progress bg-dark border border-secondary" style="height: 12px;">
+                                <div id="my-hp" class="progress-bar bg-accent border-end border-white border-2" role="progressbar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Status Cards -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="p-2 border border-secondary rounded bg-dark-glass text-center">
+                                    <div class="small text-muted mb-1 text-mono" style="font-size: 0.7rem;">LA CHAN FIREWALL</div>
+                                    <span id="my-firewall" class="badge bg-warning text-dark w-100 py-1">100 / 100</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 border border-secondary rounded bg-dark-glass text-center">
+                                    <div class="small text-muted mb-1 text-mono" style="font-size: 0.7rem;">TRANG THAI KET NOI</div>
+                                    <span class="badge bg-success w-100 py-1">AN TOAN</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inventory & Effects -->
+                        <div class="border border-secondary rounded p-2 bg-dark-glass">
+                            <h6 class="text-accent small text-uppercase mb-2 tracking-wide border-bottom border-secondary pb-1">Tai nguyen & Trang thai</h6>
+                            <div class="d-flex justify-content-between text-mono small mb-1" style="font-size: 0.75rem;">
+                                <span class="text-muted">May dao:</span> <span id="inv-miner" class="text-warning fw-bold">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-mono small mb-1" style="font-size: 0.75rem;">
+                                <span class="text-muted">Binh HP:</span> <span id="inv-hp" class="fw-bold">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-mono small mb-2" style="font-size: 0.75rem;">
+                                <span class="text-muted">Bom EMP:</span> <span id="inv-emp" class="fw-bold">0</span>
+                            </div>
+                            <div id="my-effects" class="d-flex flex-column gap-1 empty-effects text-muted small text-mono" style="font-size:0.7rem;">
+                                Khong co hieu ung bat loi.
+                            </div>
+                        </div>
+
+                        <!-- Mini Manual -->
+                        <div class="mt-auto border border-secondary rounded p-3 bg-dark-glass">
+                            <h6 class="text-accent small text-uppercase mb-3 tracking-wide">Bang lenh (phan loai)</h6>
+                            <ul class="list-unstyled mb-0 small text-mono" style="font-size: 0.75rem; line-height: 2;">
+                                <li><span class="badge bg-danger me-2">TAN CONG</span><span class="text-white fw-bold">exploit / spear / barrage / breach / bleed / pulse / virus / ddos / nuke</span></li>
+                                <li><span class="badge bg-warning text-dark me-2">GAY NHIEU</span><span class="text-white fw-bold">jam / sabotage / steal</span></li>
+                                <li><span class="badge bg-info text-dark me-2">TRINH SAT</span><span class="text-white fw-bold">scan / probe / ports</span></li>
+                                <li><span class="badge bg-success me-2">PHONG THU</span><span class="text-white fw-bold">patch / harden all / reboot / heal / firewall build</span></li>
+                                <li><span class="badge bg-secondary me-2">TIEN ICH</span><span class="text-white fw-bold">help / guide vi / status / shop / buy / use</span></li>
+                                <li><span class="badge bg-light text-dark me-2">DAC BIET</span><span class="text-white fw-bold">frenzy / decoy / purge / gamble</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terminal Center -->
+            <div class="col-lg-6 col-md-8 d-flex flex-column h-100">
+                <div class="card glass-card flex-grow-1 shadow border-accent">
+                    <div class="card-header border-bottom border-accent bg-dark-glass py-2 d-flex align-items-center">
+                        <div class="d-flex gap-2 me-3">
+                            <div class="rounded-circle bg-danger" style="width: 12px; height: 12px;"></div>
+                            <div class="rounded-circle bg-warning" style="width: 12px; height: 12px;"></div>
+                            <div class="rounded-circle bg-success" style="width: 12px; height: 12px;"></div>
+                        </div>
+                        <span class="text-light small text-mono tracking-wide">/root/bin/cyber_strike.sh (bang dieu khien)</span>
+                    </div>
+                    
+                    <div id="terminal-output" class="card-body p-3 text-mono overflow-auto d-flex flex-column gap-1" style="font-size: 0.85rem;">
+                         <div class="log-info">He thong da khoi dong. Dang cho ket noi...</div>
+                    </div>
+
+                    <div class="px-3 py-2 border-top border-accent-subtle bg-dark-glass d-flex flex-column gap-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-danger">TAN CONG</span>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="exploit 443">exploit 443</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="spear 443">spear 443</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="barrage 443">barrage 443</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="breach">breach</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="bleed 443">bleed 443</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="pulse">pulse</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="virus 443">virus 443</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="ddos">ddos</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="nuke">nuke</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-warning text-dark">GAY NHIEU</span>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="jam">jam</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="sabotage">sabotage</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="steal">steal</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-info text-dark">PHONG THU</span>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="harden all">harden all</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="reboot">reboot</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="firewall build">firewall build</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="heal">heal</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-secondary">TIEN ICH</span>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="help vi">help vi</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="guide vi">guide vi</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="status">status</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="scan">scan</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="probe 443">probe 443</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="clear">clear</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-light text-dark">DAC BIET</span>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="frenzy">frenzy</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="decoy">decoy</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="purge">purge</button>
+                            <button class="btn btn-sm btn-outline-cyber quick-cmd" data-cmd="gamble">gamble</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-dark-glass border-top border-accent p-0 position-relative">
+                        <div class="d-flex align-items-center w-100">
+                            <span class="text-accent text-mono fw-bold ps-3 pe-2 fs-5">>_</span>
+                            <input type="text" id="terminal-input" class="form-control border-0 bg-transparent text-light text-mono shadow-none py-3" autocomplete="off" spellcheck="false" placeholder="Nhap lenh..." disabled>
+                        </div>
+                        <div id="cooldown-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-75 d-none z-3">
+                            <span class="text-danger fw-bold text-mono tracking-wide">HOI CHIEU <span id="cooldown-timer">5.0</span>s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enemy Infrastructure -->
+            <div class="col-lg-3 d-flex flex-column h-100">
+                <div class="card glass-card flex-grow-1 shadow border-target">
+                    <div class="card-header border-bottom border-target bg-transparent py-3">
+                        <h6 class="mb-0 text-uppercase tracking-wide text-target fw-bold text-center">He thong doi thu</h6>
+                    </div>
+                    
+                    <!-- Pre-match placeholder -->
+                    <div id="target-placeholder" class="card-body d-flex justify-content-center align-items-center text-center text-muted text-mono small">
+                        <div class="w-100">
+                            <div id="lobby-waiting-text" class="animate-pulse mb-3">Dang doi ghep tran...</div>
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <span class="badge bg-secondary">Online: <span id="lobby-online-count">0</span></span>
+                                <span class="badge bg-warning text-dark">Hang cho: <span id="lobby-queue-count">0</span></span>
+                                <span class="badge bg-danger">Dang dau: <span id="lobby-ingame-count">0</span></span>
+                            </div>
+                            <div class="small text-start text-muted mb-2">Danh sach online (thach dau theo UID):</div>
+                            <div id="lobby-player-list" class="lobby-player-list text-start"></div>
+                            <div class="waiting-attack-visual mt-3">
+                                <div class="waiting-attack-header">LIVE THREAT MONITOR</div>
+                                <div class="waiting-attack-screen">
+                                    <div class="scanline"></div>
+                                    <div class="waiting-glitch-text">INCOMING BREACH ATTEMPT...</div>
+                                    <div class="attack-bars">
+                                        <span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                    <div class="attack-log">Target website integrity dropping...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Match active -->
+                    <div id="target-info" class="card-body d-none d-flex flex-column gap-4 overflow-auto">
+                        
+                        <!-- Target ID Box -->
+                        <div class="d-flex align-items-center gap-3 p-3 border border-target rounded bg-target-glass position-relative overflow-hidden">
+                            <div class="bg-target text-white fw-bold rounded px-3 py-3 lh-1 text-center font-monospace shadow">
+                                UID<br><span id="enemy-uid" class="fs-6">UID-???</span>
+                            </div>
+                            <div class="z-2">
+                                <div class="small text-muted mb-1 tracking-wide" style="font-size: 0.7rem;">TARGET ALIAS</div>
+                                <div id="enemy-username" class="fs-5 text-target fw-bold text-uppercase text-truncate" style="max-width: 150px;">UNKNOWN</div>
+                            </div>
+                            <div class="position-absolute end-0 top-0 h-100 w-50 bg-target opacity-25" style="clip-path: polygon(35% 0%, 100% 0%, 100% 100%, 0% 100%);"></div>
+                        </div>
+
+                        <!-- Target HP -->
+                        <div class="p-3 border border-secondary rounded bg-dark-glass">
+                            <div class="d-flex justify-content-between mb-2 small text-mono">
+                                <span class="text-target-muted">ENEMY INTEGRITY</span>
+                                <span id="enemy-hp-text" class="text-target fw-bold">100/100</span>
+                            </div>
+                            <div class="progress cyber-progress bg-dark border border-target" style="height: 12px;">
+                                <div id="enemy-hp" class="progress-bar bg-target progress-bar-striped progress-bar-animated border-end border-white border-2" role="progressbar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <div class="p-2 border border-secondary rounded bg-dark-glass d-flex justify-content-between align-items-center mb-2">
+                                    <div class="small text-muted text-mono" style="font-size: 0.7rem;">FIREWALL SHIELD</div>
+                                    <span id="enemy-firewall" class="badge bg-secondary text-light px-3 py-1">UNKNOWN</span>
+                                </div>
+                                <div id="enemy-effects" class="d-flex flex-column gap-1 empty-effects text-muted text-mono mt-1" style="font-size:0.7rem;">
+                                    No active debuffs.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fake UI representation -->
+                        <div class="mt-auto position-relative">
+                           <div class="small text-muted mb-2 text-center text-mono tracking-wide" style="font-size: 0.65rem;">WEBSITE INTERCEPT</div>
+                           <div id="fake-website" class="card bg-light text-dark rounded-2 overflow-hidden shadow target-site" style="height: 180px; opacity: 0.9;">
+                               <div class="card-header bg-white border-bottom py-2 d-flex align-items-center text-primary fw-bold" style="font-size: 0.8rem;">
+                                   <i class="me-2 rounded-circle bg-primary p-1"></i> Global Bank Ltd
+                               </div>
+                               <div class="card-body p-3 text-center d-flex flex-column justify-content-center h-100 bg-white">
+                                   <h6 class="text-dark mb-1 fw-bold fs-5">Secure Portal</h6>
+                                   <p class="text-secondary small mb-4" style="font-size: 0.7rem;">Encrypted Data Channel.</p>
+                                   <div class="w-75 mx-auto bg-primary bg-opacity-25 rounded mb-2" style="height: 6px;"></div>
+                                   <div class="w-100 mx-auto bg-primary bg-opacity-25 rounded mb-2" style="height: 6px;"></div>
+                                   <div class="w-50 mx-auto bg-primary bg-opacity-25 rounded" style="height: 6px;"></div>
+                               </div>
+                               <div id="glitch-overlay" class="position-absolute top-0 start-0 w-100 h-100 bg-danger opacity-0 pointer-events-none transition-all"></div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div class="modal fade" id="shopModal" tabindex="-1" aria-labelledby="shopModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-warning">
+          <div class="modal-header border-warning border-opacity-25 bg-dark">
+            <h5 class="modal-title text-warning logo-font" id="shopModalLabel"><i class="bi bi-cart-fill"></i> Shadow Market</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body bg-dark text-light p-4">
+            <div class="d-flex justify-content-between mb-4 border-bottom border-secondary pb-2">
+                <span class="text-muted text-mono small">AVAILABLE FUNDS</span>
+                <span class="text-warning fw-bold text-mono" id="modal-credits">0 CR</span>
+            </div>
+            
+            <div class="d-grid gap-3">
+                <button class="btn btn-outline-success text-start d-flex justify-content-between align-items-center py-3 btn-buy" data-item="hp_boost" data-price="50">
+                    <div><div class="fw-bold">HP Boost <span class="badge bg-success ms-2">Use in UI</span></div><small class="text-muted text-mono">Instantly restores 50 System Integrity.</small></div>
+                    <span class="text-warning fw-bold text-mono">50 CR</span>
+                </button>
+                <button class="btn btn-outline-danger text-start d-flex justify-content-between align-items-center py-3 btn-buy" data-item="emp" data-price="100">
+                    <div><div class="fw-bold">EMP Payload <span class="badge bg-danger ms-2">Use in UI</span></div><small class="text-muted text-mono">Deals 40 Damage through enemy firewalls.</small></div>
+                    <span class="text-warning fw-bold text-mono">100 CR</span>
+                </button>
+                <button class="btn btn-outline-info text-start d-flex justify-content-between align-items-center py-3 btn-buy" data-item="miner" data-price="100">
+                    <div><div class="fw-bold">Crypto Miner <span class="badge bg-info text-dark ms-2">Passive</span></div><small class="text-muted text-mono">+5 CR every cycle permanently.</small></div>
+                    <span class="text-warning fw-bold text-mono">100 CR</span>
+                </button>
+                <button class="btn btn-outline-light border-danger text-start d-flex justify-content-between align-items-center py-3 btn-buy" style="background: rgba(255,0,0,0.1);" data-item="nuke" data-price="200">
+                    <div><div class="fw-bold text-danger">Tactical Nuke <span class="badge bg-danger ms-2">Launch Now</span></div><small class="text-muted text-mono">Obliterates target for 80 UNBLOCKABLE damage.</small></div>
+                    <span class="text-warning fw-bold text-mono">200 CR</span>
+                </button>
+            </div>
+          </div>
+          <div class="modal-footer border-warning border-opacity-25 bg-dark border-top-0">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close Connection</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Socket.IO Client -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: an-ninh-vn
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: SEPAY_MERCHANT_ID
+        sync: false
+      - key: SEPAY_SECRET_KEY
+        sync: false

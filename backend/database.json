@@ -1,0 +1,23 @@
+{
+  "users": {
+    "nhattruongea123@gmail.com": {
+      "password": "25862586a",
+      "score": 1000,
+      "uid": "UID-MN3I6JZ2-93RTW",
+      "createdAt": "2026-03-23T18:12:21.278Z"
+    },
+    "kurumi1": {
+      "password": "12341234",
+      "score": 3000,
+      "uid": "UID-MN3I6JZ2-JJ3P7",
+      "createdAt": "2026-03-23T18:12:21.278Z"
+    },
+    "kurumi01112004": {
+      "password": "25862586a",
+      "score": 1000,
+      "uid": "UID-MN3J7C72-8HWMS",
+      "createdAt": "2026-03-23T18:40:57.470Z"
+    }
+  },
+  "donations": []
+}
