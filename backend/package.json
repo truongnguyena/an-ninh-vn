@@ -1,21 +1,28 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "test": "echo \"No backend tests configured\""
+  "name": "kurumi-mail-backend",
+  "version": "2.1.0",
+  "description": "KurumiMail — Temporary email backend with built-in SMTP + React frontend",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "scripts": {
+    "dev":          "node --watch src/server.js",
+    "start":        "node src/server.js",
+    "build:fe":     "cd ../frontend && npm run build",
+    "start:prod":   "npm run build:fe && NODE_ENV=production node src/server.js",
+    "start:server": "NODE_ENV=production node src/server.js"
+  },
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "sepay-pg-node": "^1.0.0",
-    "socket.io": "^4.8.3"
+    "compression":       "^1.8.1",
+    "cors":              "^2.8.5",
+    "dotenv":            "^16.4.5",
+    "express":           "^4.19.2",
+    "express-rate-limit":"^7.3.1",
+    "helmet":            "^8.1.0",
+    "mailparser":        "^3.7.1",
+    "nodemailer":        "^6.9.13",
+    "smtp-server":       "^3.13.4",
+    "uuid":              "^10.0.0"
   }
 }

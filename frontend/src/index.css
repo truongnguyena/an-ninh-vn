@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-dark-900 text-slate-100 font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(217, 70, 239, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  /* Glass card */
+  .glass {
+    @apply bg-dark-800/80 backdrop-blur-md border border-white/[0.06] rounded-2xl;
+  }
+
+  .glass-sm {
+    @apply bg-dark-700/60 backdrop-blur-sm border border-white/[0.05] rounded-xl;
+  }
+
+  /* Glow effects */
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 60px rgba(168, 85, 247, 0.1);
+  }
+
+  .glow-purple-sm {
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-kurumi-400 via-purple-400 to-kurumi-300 bg-clip-text text-transparent;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+           bg-gradient-to-r from-kurumi-600 to-purple-600 text-white
+           hover:from-kurumi-500 hover:to-purple-500
+           active:scale-95 transition-all duration-150
+           shadow-lg shadow-kurumi-900/50;
+  }
+
+  .btn-ghost {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+           text-slate-300 hover:text-white hover:bg-white/[0.06]
+           active:scale-95 transition-all duration-150;
+  }
+
+  .btn-danger {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+           text-red-400 hover:text-white hover:bg-red-500/20
+           active:scale-95 transition-all duration-150;
+  }
+
+  /* Input */
+  .input-field {
+    @apply bg-dark-700/50 border border-white/[0.08] rounded-xl px-4 py-2.5
+           text-slate-100 placeholder-slate-500 text-sm
+           focus:outline-none focus:border-kurumi-500/60 focus:ring-2 focus:ring-kurumi-500/20
+           transition-all duration-200;
+  }
+
+  /* Badge */
+  .badge-new {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold
+           bg-gradient-to-r from-kurumi-600 to-purple-600 text-white
+           shadow-sm shadow-kurumi-900/50;
+  }
+
+  /* Scrollbar */
+  .custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(168, 85, 247, 0.3) transparent;
+  }
+
+  .custom-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: rgba(168, 85, 247, 0.3);
+    border-radius: 2px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 85, 247, 0.5);
+  }
+
+  /* Email address display */
+  .email-address {
+    @apply font-mono text-kurumi-300 bg-dark-700/50 border border-kurumi-500/20
+           rounded-xl px-4 py-3 select-all cursor-text;
+  }
+
+  /* Pulse dot */
+  .pulse-dot {
+    @apply relative inline-flex h-2.5 w-2.5;
+  }
+
+  .pulse-dot::before {
+    content: '';
+    @apply absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping;
+  }
+
+  .pulse-dot::after {
+    content: '';
+    @apply relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400;
+  }
+}
+
+/* ─── Inbox item stagger animation ────────────────────────────────────────── */
+.inbox-item {
+  animation: inboxSlideIn 0.3s ease-out both;
+}
+
+.inbox-item:nth-child(1) { animation-delay: 0ms; }
+.inbox-item:nth-child(2) { animation-delay: 50ms; }
+.inbox-item:nth-child(3) { animation-delay: 100ms; }
+.inbox-item:nth-child(4) { animation-delay: 150ms; }
+.inbox-item:nth-child(5) { animation-delay: 200ms; }
+.inbox-item:nth-child(6) { animation-delay: 250ms; }
+
+@keyframes inboxSlideIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ─── Progress bar ─────────────────────────────────────────────────────────── */
+@keyframes progressShrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* ─── Toast slide in ───────────────────────────────────────────────────────── */
+@keyframes toastSlideIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.toast-enter {
+  animation: toastSlideIn 0.3s ease-out;
+}
